@@ -21,7 +21,7 @@
 
 Ainda não há código de port PS2, backend gráfico PS2, ELF, ROM ou build deste projeto. A base Smash Remix 2.0.1 observada no BattleShip e o submódulo do +EXTRA coincidem no commit de fonte, mas as extensões +EXTRA ainda não foram mapeadas para as estruturas e lógica C/C++ do port. PS2 requer backend de GS dedicado e validação por subsistema.
 
-Esta auditoria foi estática: não foram executados comandos Git, scripts dos projetos, builds ou testes com ROM. A branch/worktree local não foi consultada por comando Git. O workflow ainda deve criar a branch e o Pull Request depois de validar estes relatórios.
+Esta auditoria foi estática: não foram executados scripts dos projetos, builds ou testes com ROM. Os metadados Git foram lidos dos arquivos presentes nos clones; worktrees limpos e inventário remoto completo de tags não foram confirmados. O Copilot CLI não recebeu shell, portanto sua tentativa de validar YAML com Python foi bloqueada. A execução #3 gerou os relatórios e o workflow publicou a branch; a abertura automática do PR foi bloqueada pela configuração do repositório que impede Actions de criar Pull Requests. O PR #4 foi aberto separadamente para revisão.
 
 ## Bloqueios e riscos conhecidos
 
