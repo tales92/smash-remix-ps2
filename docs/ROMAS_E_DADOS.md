@@ -64,5 +64,5 @@ O futuro workflow deverá:
 1. receber ou localizar entradas apenas em armazenamento privado autorizado;
 2. validar nomes, tamanho e hashes antes de executar scripts;
 3. nunca imprimir o conteúdo dos arquivos ou segredos nos logs;
-4. não empacotar ROMs/seriados de assets em artefatos de saída;
+4. não empacotar ROMs/pacotes de assets em artefatos de saída;
 5. publicar somente logs sanitizados, relatórios, builds não protegidas e documentação.
