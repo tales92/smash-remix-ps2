@@ -30,6 +30,18 @@ Workflow: `.github/workflows/ps2-elf-smoke-test.yml`
 
 Esta prova não precisa de Copilot, ROM, assets ou segredos. Ela valida compilação/ligação, não o boot no emulador/console.
 
+## 3. Tarefas personalizadas de programação com Copilot
+
+Workflow: `.github/workflows/copilot-task.yml`
+
+- Disparo manual: `Actions → Tarefa de programação com Copilot → Run workflow`.
+- Cole um prompt no campo `task`.
+- O runner prepara referências PS2SDK, gsKit, PS2DEV e BattleShip-Remix.
+- O agente pode ler e escrever arquivos; shell permanece bloqueado.
+- As alterações permitidas são publicadas em branch própria e Pull Request.
+- ROMs, dados extraídos, cópias de fontes de referência e binários são excluídos.
+- O workflow não compila: para isso, usa-se o workflow de build específico do subsistema.
+
 ## Permissões
 
 - O workflow do Copilot usa `contents: write` e `pull-requests: write` para criar branch e PR; o `GITHUB_TOKEN` precisa estar autorizado a abrir PR.
