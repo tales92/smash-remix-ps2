@@ -15,8 +15,8 @@
 
 ## Em andamento
 
-- [ ] Compilar e validar o ELF mínimo usando a imagem PS2DEV oficial fixada por digest (workflow `.github/workflows/ps2-elf-smoke-test.yml`).
-- [ ] Confirmar o download do ELF e do log como artefatos do Actions.
+- [x] Compilar e validar o ELF mínimo usando PS2DEV v2.0.0 em GitHub Actions (run #1).
+- [x] Publicar ELF e log como artefatos do Actions (artifact `ps2-elf-smoke-test-1`).
 - [ ] Executar o ELF em emulador ou hardware real (etapa posterior à compilação).
 
 ## Ainda pendente
@@ -33,7 +33,17 @@ A auditoria identificou que BattleShip-Remix contém lógica do Smash Remix 2.0.
 
 O +EXTRA utiliza o mesmo commit-base de Smash Remix 2.0.1 identificado no BattleShip, mas seu pipeline modifica ROM, tabelas e assembly. Isso não equivale a uma integração automática com o runtime nativo.
 
-O teste atual de ELF é isolado, não utiliza ROM e não implementa gameplay.
+O teste mínimo de ELF foi compilado e validado no runner hospedado. O ELF tem cabeçalho ELF32, dados little-endian, Machine reportado como MIPS R3000 pelo `readelf`, flags que incluem `5900`, `abi2` e `mips3`, e entry point `0x100e40`. O compilador utilizado foi `mips64r5900el-ps2-elf-gcc`. Isso confirma a compilação/linkagem para o alvo EE, mas não comprova o boot em emulador ou hardware real. O teste é isolado, não utiliza ROM e não implementa gameplay.
+
+## Resultado da primeira compilação PS2
+
+- Workflow: [PS2 — ELF mínimo, run #1](https://github.com/tales92/smash-remix-ps2/actions/runs/43792633427).
+- Resultado: sucesso.
+- Imagem: `ghcr.io/ps2dev/ps2dev:v2.0.0`, digest AMD64 fixado no workflow.
+- ELF: `ps2/hello/build/smash-remix-ps2-hello.elf`.
+- SHA-256: `2845936c8050324c479374089bee229aca3e70ef89b7e96e5ede08428d06687f`.
+- Artifact: `ps2-elf-smoke-test-1`, ID `14192518057`, retenção até 30/11/2026.
+- A compilação e a validação do cabeçalho passaram. Ainda falta executar o ELF em emulador ou PS2 real.
 
 ## Histórico da automação Copilot
 
