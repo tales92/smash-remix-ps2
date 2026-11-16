@@ -29,13 +29,16 @@ Scripts dos clones foram lidos, não executados. Não se recomenda chamar `toolc
 - **Custo:** uso incluído, minutos e concorrência dependem de repo público/privado, plano, região/configuração da conta e saldo. O README deste projeto descreve o repositório como privado, mas esta auditoria não tem acesso ao plano nem à cota atual; logo, não é possível afirmar que a cadeia completa cabe no orçamento gratuito.
 - **Conclusão:** pode-se planejar e validar a etapa mínima em hosted runner; não declarar “todo o fluxo gratuito” até medir toolchain fria/quente e build-alvo em Actions e verificar a cota real. O caminho mais controlável é toolchain containerizada/cacheada e build incremental, com limites e artifacts explícitos.
 
-## Workflow mínimo proposto (não implementado)
+## Prova de conceito de ELF adicionada ao repositório
 
-- Evento manual `workflow_dispatch`, `permissions` mínimas, `timeout-minutes` explícito.
-- Job sem secrets e sem ROM, usando container por digest ou toolchain previamente cacheada.
-- Log de ambiente: commits e versões de compiler/SDK; log de build com saída não protegida.
-- Compilar somente ELF hello-world, validar ELF/checksum, upload de ELF e log.
-- Retenção curta para logs/artefatos de diagnóstico; nenhum arquivo de ROM/asset no cache ou artifact.
-- Próxima etapa só após o mínimo passar: gsKit, controle, áudio e storage em workflows separados.
+Foi preparado no PR #5 o workflow manual `.github/workflows/ps2-elf-smoke-test.yml` e o projeto mínimo `ps2/hello/`. A execução ainda precisa ocorrer após o merge; portanto, os itens abaixo descrevem a configuração, não um resultado de compilação já confirmado.
 
-Não foram modificados workflows, instalados pacotes, invocados scripts externos ou compilados ELF/jogo. O fluxo acima é uma proposta para o próximo marco.
+- Runner GitHub-hosted `ubuntu-latest`, com Docker.
+- Imagem oficial `ghcr.io/ps2dev/ps2dev:v2.0.0`, fixada ao digest Linux AMD64 `sha256:7e369990274611d9f145cfe60ac578ded5aad5b6485d0afd67c7bfecce830cef`.
+- Compilação com `mips64r5900el-ps2-elf-gcc` e regras de EE do PS2SDK (`Makefile.pref` e `Makefile.eeglobal`).
+- Inspeção de ELF com `mips64r5900el-ps2-elf-readelf -h`, cálculo de SHA-256 e upload do ELF/log como artefatos de 14 dias.
+- O teste não usa ROM, assets de jogo, Copilot ou segredos; o workflow tem apenas `contents: read`.
+
+**Critério de aceite pendente:** o Actions precisa concluir a execução com ELF não vazio, cabeçalho MIPS válido e artefato disponível. Isso prova compilação/ligação; o boot em emulador ou console continua sendo uma etapa separada.
+
+A próxima prova, depois do ELF mínimo, será uma aplicação gsKit que apresente uma primitiva estática. Controle, áudio e filesystem devem continuar em workflows/testes separados.

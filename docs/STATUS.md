@@ -1,43 +1,53 @@
 # Estado do projeto
 
 **Data:** 16/11/2026  
-**Fase atual:** 0 — preparação do repositório e auditoria técnica.
+**Fase atual:** 1 — prova de conceito da toolchain PS2 e ELF mínimo.
 
 ## Concluído
 
 - [x] Repositório privado criado.
-- [x] README inicial adicionado.
-- [x] Repositórios centrais e dependências principais identificados.
-- [x] Branches padrão/referência consultadas no GitHub.
-- [ ] Estrutura de documentação e instruções do agente — neste PR.
-- [x] Auditoria estática inicial de BattleShip-Remix, +EXTRA, dependências e infraestrutura PS2 documentada em `docs/reports/`.
-- [x] Commits/branches locais observados e submódulos efetivamente usados pelo BattleShip identificados.
-- [ ] Estratégia de armazenamento/transferência de ROMs para runners.
-- [ ] Autenticação Copilot CLI em GitHub Actions validada.
-- [ ] Compatibilidade runtime de +EXTRA com o BattleShip nativo demonstrada.
-- [ ] Toolchain PS2 reproduzível e ELF mínimo verificados no GitHub Actions.
+- [x] Estrutura inicial, instruções do agente e catálogo de referências incorporados à `main` (PR #1).
+- [x] Workflow manual de auditoria com Copilot CLI incorporado à `main` (PR #2).
+- [x] Correção de configuração do modelo automático do Copilot CLI incorporada (PR #3).
+- [x] Auditoria estática inicial de BattleShip-Remix, +EXTRA, dependências e infraestrutura PS2 concluída e incorporada (PR #4).
+- [x] Copilot CLI autenticado e executando tarefas em GitHub Actions (execução #3).
+- [x] Estratégia de armazenamento permanente de ROMs documentada: ativos de uma GitHub Release privada.
+
+## Em andamento
+
+- [ ] Compilar e validar o ELF mínimo usando a imagem PS2DEV oficial fixada por digest (workflow `.github/workflows/ps2-elf-smoke-test.yml`).
+- [ ] Confirmar o download do ELF e do log como artefatos do Actions.
+- [ ] Executar o ELF em emulador ou hardware real (etapa posterior à compilação).
+
+## Ainda pendente
+
+- [ ] Criar a Release privada `private-rom-library` e enviar os arquivos de entrada confirmados.
+- [ ] Implementar download autenticado de ativos de Release em workflows que realmente precisem de ROM.
+- [ ] Demonstrar compatibilidade runtime de +EXTRA com o BattleShip nativo.
+- [ ] Criar prova de conceito gráfica gsKit, inicialmente com uma primitiva estática.
+- [ ] Desenvolver backend PS2 para renderer, áudio, controles, filesystem, scheduler e temporização.
 
 ## Estado técnico
 
-Ainda não há código de port PS2, backend gráfico PS2, ELF, ROM ou build deste projeto. A base Smash Remix 2.0.1 observada no BattleShip e o submódulo do +EXTRA coincidem no commit de fonte, mas as extensões +EXTRA ainda não foram mapeadas para as estruturas e lógica C/C++ do port. PS2 requer backend de GS dedicado e validação por subsistema.
+A auditoria identificou que BattleShip-Remix contém lógica do Smash Remix 2.0.1 em C/C++, mas a infraestrutura de PC não é compatível diretamente com PS2. O caminho provável exige backend GS dedicado, preservando o máximo possível da lógica de jogo.
 
-Esta auditoria foi estática: não foram executados scripts dos projetos, builds ou testes com ROM. Os metadados Git foram lidos dos arquivos presentes nos clones; worktrees limpos e inventário remoto completo de tags não foram confirmados. O Copilot CLI não recebeu shell, portanto sua tentativa de validar YAML com Python foi bloqueada. A execução #3 gerou os relatórios e o workflow publicou a branch; a abertura automática do PR foi bloqueada pela configuração do repositório que impede Actions de criar Pull Requests. O PR #4 foi aberto separadamente para revisão.
+O +EXTRA utiliza o mesmo commit-base de Smash Remix 2.0.1 identificado no BattleShip, mas seu pipeline modifica ROM, tabelas e assembly. Isso não equivale a uma integração automática com o runtime nativo.
 
-## Bloqueios e riscos conhecidos
+O teste atual de ELF é isolado, não utiliza ROM e não implementa gameplay.
 
-1. Diferenças de arquitetura entre o runtime do BattleShip-Remix e o hardware PS2.
-2. +EXTRA expande/patcha ROM e modifica assembly/tabelas; falta mapear suas mudanças executáveis e IDs para o runtime nativo.
-3. A cadeia de build PS2 precisa ser fixada e medida em runner hospedado, incluindo o bootstrap frio do toolchain.
-4. Os arquivos de entrada privados ainda não têm um mecanismo aprovado de transferência ao runner.
-5. O backend gráfico PS2, áudio, controle, filesystem e scheduler não foram implementados ou validados.
-6. O custo de Actions depende do plano/saldo; não se pode garantir que o fluxo completo caiba no nível gratuito sem medição.
+## Histórico da automação Copilot
+
+- Execução #1: falhou na autenticação. A existência do segredo não comprovava sua validade.
+- Execução #2: token foi encontrado, mas a CLI parou porque o modelo `auto` não aceitava `--effort=high`.
+- Execução #3: Copilot autenticou, clonou as referências e gerou os quatro relatórios. O workflow publicou a branch, mas a criação automática do PR foi bloqueada pela configuração do repositório.
+- PR #4 foi aberto separadamente, revisado e incorporado à `main`.
+
+## Limitações e riscos conhecidos
+
+1. A camada gráfica Fast3D/RDP precisará ser traduzida para o Graphics Synthesizer do PS2.
+2. +EXTRA expande/patcha ROM e modifica assembly/tabelas; falta mapear essas mudanças para a representação C/C++ nativa.
+3. A toolchain precisa ser testada de verdade em runner hospedado; o workflow de ELF mínimo está preparado, mas ainda não há resultado de compilação registrado.
+4. Os arquivos de entrada privados ainda não foram armazenados na Release nem disponibilizados a runners.
+5. O custo de Actions depende do plano e saldo; não se pode garantir que builds maiores caibam no uso gratuito sem medição.
 
 Atualize este arquivo em cada Pull Request relevante. Nunca marque uma etapa como concluída sem evidência.
-
-## Primeira execução do Copilot CLI
-
-- Run: [#1 — 43786813182](https://github.com/tales92/smash-remix-ps2/actions/runs/43786813182).
-- O runner iniciou corretamente; encontrou o segredo, instalou Copilot CLI e clonou todas as referências configuradas.
-- A etapa do Copilot CLI terminou com `Authentication failed`. A mensagem do GitHub indica token inválido/expirado/revogado ou sem a permissão `Copilot Requests`.
-- A mera existência do segredo não comprova a validade do token. É necessário revisar ou substituir o fine-grained PAT e executar novamente.
-- Nenhum relatório foi gerado e nenhuma branch/PR de auditoria foi criada nesta execução.

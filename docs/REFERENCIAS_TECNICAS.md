@@ -61,7 +61,8 @@ Não adicione todos esses projetos como submódulos automaticamente. Primeiro de
 |---|---|---|
 | [PS2SDK](https://github.com/ps2dev/ps2sdk) | `master`, commit `b04e8973c8a9839d0653d87a8d30cc67fd3c3f05` | Bibliotecas de desenvolvimento PS2: acesso ao hardware, controles, memory card, USB, HDD e áudio via FreeSD, entre outros. |
 | [gsKit](https://github.com/ps2dev/gsKit) | `master`, commit `8ef73d05f022d14b3ded7c70cba670fe333ed61a`, tag `v1.5.1` observada | Interface C de baixo nível para o Graphics Synthesizer do PS2; depende de PS2SDK/PS2Toolchain. |
-| [PS2Toolchain](https://github.com/ps2dev/ps2toolchain) | `master`, commit `41610ee0bc15f887c65ea208bcb9234a3b812005` | Scripts para compilar e instalar os compiladores utilizados em homebrew PS2. Avaliar custo/tempo de instalação em runners hospedados. |
+| [PS2Toolchain](https://github.com/ps2dev/ps2toolchain) | `master`, commit `41610ee0bc15f887c65ea208bcb9234a3b812005` | Scripts para compilar e instalar os compiladores utilizados em homebrew PS2. |
+| [PS2DEV environment](https://github.com/ps2dev/ps2dev) | tag de imagem `v2.0.0`; digest Linux AMD64 `sha256:7e369990274611d9f145cfe60ac578ded5aad5b6485d0afd67c7bfecce830cef` | Imagem de container que reúne PS2Toolchain, PS2SDK, ps2sdk-ports, gsKit, ps2-packer e ps2client. Usada pelo workflow de ELF mínimo; imagem fixada por digest. |
 
 ## 4. Perguntas que a auditoria precisa responder
 

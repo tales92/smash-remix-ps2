@@ -1,6 +1,6 @@
 # GitHub Actions
 
-## Auditoria técnica com Copilot CLI
+## 1. Auditoria técnica com Copilot CLI
 
 Workflow: `.github/workflows/copilot-auditoria-inicial.yml`
 
@@ -10,33 +10,35 @@ Workflow: `.github/workflows/copilot-auditoria-inicial.yml`
 - Clona as referências públicas em `audit-sources/` (diretório ignorado pelo Git).
 - Executa o prompt `prompts/01-auditoria-inicial.md`.
 - O Copilot recebe somente permissões de leitura e escrita de arquivos; shell é negado.
-- O workflow valida os quatro relatórios e cria uma branch `ai/initial-technical-audit-<run-id>` com Pull Request para `main`.
+- Valida quatro relatórios e cria branch/PR para revisão.
 - Não compila o jogo, não executa scripts dos repositórios clonados e não usa ROMs.
 
-## Segredo necessário
+Segredo necessário: `COPILOT_GITHUB_TOKEN`, Fine-grained PAT da conta pessoal com Account permission `Copilot Requests: Write`.
 
-Em `Settings → Secrets and variables → Actions`, deve existir o segredo:
+Para permitir criação automática de PR, ativar `Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests`.
 
-`COPILOT_GITHUB_TOKEN`
+## 2. Prova de conceito: ELF mínimo de PS2
 
-Ele deve conter um fine-grained PAT da conta pessoal do usuário com a permissão Account `Copilot Requests: Read`. O token deve permanecer restrito e não pode ser exibido em logs.
+Workflow: `.github/workflows/ps2-elf-smoke-test.yml`
 
-O workflow verifica apenas se o segredo existe. Uma chamada bem-sucedida do Copilot CLI é que confirma a autenticação.
+- Disparo manual: `Actions → PS2 — ELF mínimo → Run workflow`.
+- Usa runner hospedado `ubuntu-latest` com Docker.
+- Usa a imagem oficial `ghcr.io/ps2dev/ps2dev:v2.0.0`, fixada pelo digest Linux AMD64 registrado no workflow.
+- Compila `ps2/hello/main.c` com as regras oficiais do PS2SDK.
+- Valida o cabeçalho ELF com `mips64r5900el-ps2-elf-readelf` e calcula SHA-256.
+- Publica o ELF e o log como artefatos do Actions por 14 dias.
 
-## Permissões do workflow
+Esta prova não precisa de Copilot, ROM, assets ou segredos. Ela valida compilação/ligação, não o boot no emulador/console.
 
-O workflow solicita `contents: write` e `pull-requests: write` para permitir que o runner publique uma branch e abra o Pull Request de auditoria. O token do Actions é usado somente na etapa final, separado do segredo do Copilot.
+## Permissões
 
-## Segurança
+- O workflow do Copilot usa `contents: write` e `pull-requests: write` para criar branch e PR; o `GITHUB_TOKEN` precisa estar autorizado a abrir PR.
+- O workflow de ELF usa somente `contents: read`; não modifica o repositório.
+- Nenhum dos dois workflows acessa ROMs.
 
-- Disparo manual, sem agendamento ou execução automática a cada push.
-- Não há acesso às ROMs ou aos dados extraídos.
-- As fontes externas são clonadas, mas seus scripts não são executados.
-- O agente não recebe permissão de shell nem de Git push.
-- O token do Actions não fica persistido pelo checkout; a autenticação do push é fornecida temporariamente à chamada Git.
-- Os arquivos a serem versionados são explicitamente enumerados no workflow.
-- Todos os resultados chegam em Pull Request, nunca diretamente em `main`.
+## Segurança e armazenamento
 
-## Limitações
-
-O Copilot Free permite usar o CLI, mas a utilização de chat/agente é limitada. Uma auditoria extensa pode consumir a franquia disponível. Os minutos de GitHub Actions também estão sujeitos aos limites do plano e do tipo de runner.
+- ROMs e recursos protegidos não devem ser adicionados ao Git, logs, caches ou artefatos.
+- A estratégia de armazenamento permanente é uma GitHub Release privada, documentada em `docs/ARMAZENAMENTO_PRIVADO.md`.
+- Nenhuma Release foi criada nem arquivo enviado ainda.
+- O download dos ativos deverá ser implementado somente quando uma etapa realmente precisar de ROM.
