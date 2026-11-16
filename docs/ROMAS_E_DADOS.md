@@ -54,9 +54,15 @@ assets/
 - `assets/extracted/`: área de trabalho para dados extraídos, nunca para commits de assets protegidos.
 - builds, objetos, caches e dumps temporários devem permanecer fora do controle de versão.
 
-## 4. Próxima decisão: como entregar entradas ao GitHub Actions
+## 4. Armazenamento permanente escolhido
 
-Antes de criar um workflow que consuma ROMs, medir tamanhos e identificar exatamente quais arquivos são necessários. Depois comparar alternativas, incluindo Git LFS e armazenamento privado/artefatos com acesso controlado, considerando limites, custos, retenção e permissões vigentes.
+A estratégia definida é manter as ROMs como ativos de uma **GitHub Release privada**, sem commit dos binários no histórico Git. Consulte [ARMAZENAMENTO_PRIVADO.md](ARMAZENAMENTO_PRIVADO.md) para os limites, a organização e o fluxo de download autenticado pelo GitHub Actions.
+
+A pasta `assets/roms/` é apenas um marcador/área de referência; não é o local de armazenamento permanente.
+
+## 5. Entrega de entradas ao GitHub Actions
+
+Antes de criar um workflow que consuma ROMs, medir tamanhos e identificar exatamente quais arquivos são necessários. Depois criar a Release privada e validar o download autenticado com `GITHUB_TOKEN`.
 
 Não use GitHub Secrets para armazenar ROMs grandes: Secrets são destinados a valores de configuração/credenciais, não a arquivos binários volumosos.
 
