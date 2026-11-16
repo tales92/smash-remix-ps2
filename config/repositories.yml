@@ -1,26 +1,49 @@
 # Catálogo inicial de repositórios.
-# Branches foram consultadas em 15/11/2026; confira novamente antes de fixar commits.
+# Commits observados nos clones locais em 16/11/2026; não são pins aprovados para builds.
+# Confirme novamente a origem/licença e fixe dependências por revisão deliberada.
 repositories:
   - id: battleship-remix
     name: BattleShip-Remix
     url: https://github.com/lucasliet/BattleShip-remix
     branch: feature/remix-port
+    observed_commit: 93db0f7e7067cc80c36f8314effe2d243e848162
     role: base candidata do port nativo; Smash Remix 2.0.1
     priority: 1
-    status: to-audit
+    status: audited-candidate
+    submodules:
+      - id: decomp-remix-fork
+        url: https://github.com/lucasliet/ssb-decomp-re-remix
+        branch: feature/remix-port
+        observed_commit: 3413abab6898eaa76ef7bd426665a495f00f1be7
+      - id: libultraship-remix-fork
+        url: https://github.com/lucasliet/libultraship-remix
+        branch: feature/remix-port
+        observed_commit: 29f3df755b38506aa366add97b70b3089536be57
+      - id: torch-remix-fork
+        url: https://github.com/lucasliet/Torch-remix
+        branch: feature/remix-port
+        observed_commit: 80535fb29c98353869e118b49ae7715cb5fa2fe2
 
   - id: smash-remix-plus-extra
     name: Smash Remix +EXTRA
     url: https://github.com/joaorb64/smashremix-plus-extra
     branch: main
+    observed_commit: ee3d2f0f0e49aeb1dc598670a7f6f1f75c3e2a82
     role: pipeline de expansão de conteúdo e patches
     priority: 2
-    status: to-audit
+    status: audited-reference
+    submodules:
+      - id: smashremix
+        url: https://github.com/JSsixtyfour/smashremix
+        branch: master
+        observed_commit: 5e04fe7fcd023cd43c71f25f89bb6e810d254d55
+        observed_tag: 2.0.1
 
   - id: ssb-decomp-re
     name: Super Smash Bros. 64 Decompilation
     url: https://github.com/VetriTheRetri/ssb-decomp-re
     branch: main
+    observed_commit: 572a747d8171137718fad472c5d7473dc7309ffd
     role: referência de descompilação e código original
     priority: 3
     status: reference
@@ -29,6 +52,8 @@ repositories:
     name: Smash Remix
     url: https://github.com/JSsixtyfour/smashremix
     branch: master
+    observed_commit: 5e04fe7fcd023cd43c71f25f89bb6e810d254d55
+    observed_tag: 2.0.1
     role: código-fonte upstream e submódulo utilizado pelo +EXTRA
     priority: 4
     status: reference
@@ -37,6 +62,7 @@ repositories:
     name: BattleShip
     url: https://github.com/JRickey/BattleShip
     branch: main
+    observed_commit: 241a3ae154f249469d8707432ec79f51f997cf54
     role: upstream do fork BattleShip-Remix
     priority: 5
     status: reference
@@ -45,7 +71,8 @@ repositories:
     name: libultraship
     url: https://github.com/Kenix3/libultraship
     branch: main
-    role: camada de renderização, áudio e entrada usada pelo BattleShip
+    observed_commit: 759b13401cd6903daa67a00a753066f791622e78
+    role: upstream de libultraship; o BattleShip usa o fork lucasliet/libultraship-remix
     priority: 6
     status: dependency-to-audit
 
@@ -53,7 +80,8 @@ repositories:
     name: Torch
     url: https://github.com/HarbourMasters/Torch
     branch: main
-    role: extração e preparação de assets
+    observed_commit: 22d32182e146716309249a8f668931ad47b5ce0c
+    role: upstream de Torch; o BattleShip usa o fork lucasliet/Torch-remix
     priority: 7
     status: dependency-to-audit
 
@@ -61,6 +89,7 @@ repositories:
     name: PS2SDK
     url: https://github.com/ps2dev/ps2sdk
     branch: master
+    observed_commit: b04e8973c8a9839d0653d87a8d30cc67fd3c3f05
     role: SDK e bibliotecas do PlayStation 2
     priority: 8
     status: target-tooling
@@ -69,6 +98,8 @@ repositories:
     name: gsKit
     url: https://github.com/ps2dev/gsKit
     branch: master
+    observed_commit: 8ef73d05f022d14b3ded7c70cba670fe333ed61a
+    observed_tag: v1.5.1
     role: interface C para o Graphics Synthesizer
     priority: 9
     status: target-tooling
@@ -77,6 +108,7 @@ repositories:
     name: PS2Toolchain
     url: https://github.com/ps2dev/ps2toolchain
     branch: master
+    observed_commit: 41610ee0bc15f887c65ea208bcb9234a3b812005
     role: compiladores e ferramentas para homebrew PS2
     priority: 10
     status: target-tooling
