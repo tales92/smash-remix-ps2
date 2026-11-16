@@ -1,0 +1,81 @@
+name: PS2 — ELF mínimo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ps2-elf-smoke-test
+  cancel-in-progress: false
+
+jobs:
+  build-hello-elf:
+    name: Compilar ELF mínimo com PS2SDK
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      PS2DEV_IMAGE: ghcr.io/ps2dev/ps2dev:v2.0.0@sha256:7e369990274611d9f145cfe60ac578ded5aad5b6485d0afd67c7bfecce830cef
+
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Identificar a imagem PS2DEV fixada
+        run: |
+          set -eu
+          printf 'Imagem: %s\n' "$PS2DEV_IMAGE"
+          docker pull "$PS2DEV_IMAGE"
+          docker image inspect "$PS2DEV_IMAGE" --format '{{.Id}}'
+
+      - name: Compilar o ELF para o Emotion Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build-artifacts
+
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/workspace" \
+            --workdir /workspace/ps2/hello \
+            "$PS2DEV_IMAGE" \
+            sh -eu -c '
+              apk add --no-cache make
+
+              printf "PS2DEV=%s\n" "$PS2DEV"
+              printf "PS2SDK=%s\n" "$PS2SDK"
+              command -v mips64r5900el-ps2-elf-gcc
+              command -v mips64r5900el-ps2-elf-readelf
+              test -f "$PS2SDK/samples/Makefile.pref"
+              test -f "$PS2SDK/samples/Makefile.eeglobal"
+
+              make clean
+              make
+
+              ELF="build/smash-remix-ps2-hello.elf"
+              test -s "$ELF"
+
+              printf "\n=== Cabeçalho ELF ===\n"
+              mips64r5900el-ps2-elf-readelf -h "$ELF"
+
+              printf "\n=== Tipo do arquivo ===\n"
+              mips64r5900el-ps2-elf-readelf -h "$ELF" | grep -E "Class:|Data:|Machine:|Entry point"
+
+              printf "\n=== SHA-256 ===\n"
+              sha256sum "$ELF"
+            ' 2>&1 | tee "$GITHUB_WORKSPACE/build-artifacts/ps2-elf-build.log"
+
+      - name: Publicar ELF e log da compilação
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ps2-elf-smoke-test-${{ github.run_number }}
+          path: |
+            ps2/hello/build/smash-remix-ps2-hello.elf
+            build-artifacts/ps2-elf-build.log
+          if-no-files-found: warn
+          retention-days: 14
