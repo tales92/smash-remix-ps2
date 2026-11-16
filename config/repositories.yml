@@ -112,3 +112,14 @@ repositories:
     role: compiladores e ferramentas para homebrew PS2
     priority: 10
     status: target-tooling
+
+  - id: ps2dev-container
+    name: PS2DEV build environment
+    url: https://github.com/ps2dev/ps2dev
+    branch: master
+    observed_tag: v2.0.0
+    container_image: ghcr.io/ps2dev/ps2dev:v2.0.0
+    linux_amd64_digest: sha256:7e369990274611d9f145cfe60ac578ded5aad5b6485d0afd67c7bfecce830cef
+    role: imagem de container com PS2Toolchain, PS2SDK, gsKit e ferramentas auxiliares para builds de homebrew
+    priority: 11
+    status: build-tooling
