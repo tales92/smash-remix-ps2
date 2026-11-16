@@ -97,8 +97,7 @@ jobs:
             --allow-tool=read \
             --allow-tool=write \
             --deny-tool=shell \
-            --no-ask-user \
-            --effort=high
+            --no-ask-user
 
       - name: Validar os relatórios produzidos
         shell: bash
