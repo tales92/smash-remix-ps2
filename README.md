@@ -15,7 +15,7 @@ O trabalho parte de projetos existentes de descompilação, portabilidade e dese
 - **Referência de descompilação:** [ssb-decomp-re](https://github.com/VetriTheRetri/ssb-decomp-re).
 - **Alvo:** PlayStation 2, usando [PS2SDK](https://github.com/ps2dev/ps2sdk), [gsKit](https://github.com/ps2dev/gsKit) e [PS2Toolchain](https://github.com/ps2dev/ps2toolchain), sujeitos à validação técnica.
 
-Consulte [docs/REFERENCIAS_TECNICAS.md](docs/REFERENCIAS_TECNICAS.md) para a lista de repositórios, branches e funções conhecidas.
+Consulte [docs/REFERENCIAS_TECNICAS.md](docs/REFERENCIAS_TECNICAS.md) para a lista de repositórios, branches e funções conhecidas. A primeira prova de compilação para PS2 fica em [ps2/hello/](ps2/hello/), executada pelo workflow manual [PS2 — ELF mínimo](.github/workflows/ps2-elf-smoke-test.yml).
 
 ## Estrutura
 
