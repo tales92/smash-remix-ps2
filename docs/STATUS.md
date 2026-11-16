@@ -28,3 +28,11 @@ Ainda não há código de port PS2, backend gráfico PS2, ELF, ROM ou build dest
 5. Os limites gratuitos do GitHub Actions e do Copilot precisam ser monitorados.
 
 Atualize este arquivo em cada Pull Request relevante. Nunca marque uma etapa como concluída sem evidência.
+
+## Primeira execução do Copilot CLI
+
+- Run: [#1 — 43786813182](https://github.com/tales92/smash-remix-ps2/actions/runs/43786813182).
+- O runner iniciou corretamente; encontrou o segredo, instalou Copilot CLI e clonou todas as referências configuradas.
+- A etapa do Copilot CLI terminou com `Authentication failed`. A mensagem do GitHub indica token inválido/expirado/revogado ou sem a permissão `Copilot Requests`.
+- A mera existência do segredo não comprova a validade do token. É necessário revisar ou substituir o fine-grained PAT e executar novamente.
+- Nenhum relatório foi gerado e nenhuma branch/PR de auditoria foi criada nesta execução.
