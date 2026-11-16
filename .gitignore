@@ -13,6 +13,7 @@
 
 # Cópias temporárias de fontes externas para auditoria (nunca versionar)
 /audit-sources/
+/agent-sources/
 
 # Artefatos locais de workflows/builds
 /build-artifacts/
