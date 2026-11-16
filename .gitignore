@@ -11,6 +11,9 @@
 *.ips
 *.ups
 
+# Cópias temporárias de fontes externas para auditoria (nunca versionar)
+/audit-sources/
+
 # Dados extraídos e conteúdo gerado
 /assets/extracted/**
 !/assets/extracted/README.md
