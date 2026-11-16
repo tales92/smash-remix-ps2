@@ -1,0 +1,82 @@
+# Catálogo inicial de repositórios.
+# Branches foram consultadas em 15/11/2026; confira novamente antes de fixar commits.
+repositories:
+  - id: battleship-remix
+    name: BattleShip-Remix
+    url: https://github.com/lucasliet/BattleShip-remix
+    branch: feature/remix-port
+    role: base candidata do port nativo; Smash Remix 2.0.1
+    priority: 1
+    status: to-audit
+
+  - id: smash-remix-plus-extra
+    name: Smash Remix +EXTRA
+    url: https://github.com/joaorb64/smashremix-plus-extra
+    branch: main
+    role: pipeline de expansão de conteúdo e patches
+    priority: 2
+    status: to-audit
+
+  - id: ssb-decomp-re
+    name: Super Smash Bros. 64 Decompilation
+    url: https://github.com/VetriTheRetri/ssb-decomp-re
+    branch: main
+    role: referência de descompilação e código original
+    priority: 3
+    status: reference
+
+  - id: smash-remix
+    name: Smash Remix
+    url: https://github.com/JSsixtyfour/smashremix
+    branch: master
+    role: código-fonte upstream e submódulo utilizado pelo +EXTRA
+    priority: 4
+    status: reference
+
+  - id: battleship-upstream
+    name: BattleShip
+    url: https://github.com/JRickey/BattleShip
+    branch: main
+    role: upstream do fork BattleShip-Remix
+    priority: 5
+    status: reference
+
+  - id: libultraship
+    name: libultraship
+    url: https://github.com/Kenix3/libultraship
+    branch: main
+    role: camada de renderização, áudio e entrada usada pelo BattleShip
+    priority: 6
+    status: dependency-to-audit
+
+  - id: torch
+    name: Torch
+    url: https://github.com/HarbourMasters/Torch
+    branch: main
+    role: extração e preparação de assets
+    priority: 7
+    status: dependency-to-audit
+
+  - id: ps2sdk
+    name: PS2SDK
+    url: https://github.com/ps2dev/ps2sdk
+    branch: master
+    role: SDK e bibliotecas do PlayStation 2
+    priority: 8
+    status: target-tooling
+
+  - id: gskit
+    name: gsKit
+    url: https://github.com/ps2dev/gsKit
+    branch: master
+    role: interface C para o Graphics Synthesizer
+    priority: 9
+    status: target-tooling
+
+  - id: ps2toolchain
+    name: PS2Toolchain
+    url: https://github.com/ps2dev/ps2toolchain
+    branch: master
+    role: compiladores e ferramentas para homebrew PS2
+    priority: 10
+    status: target-tooling

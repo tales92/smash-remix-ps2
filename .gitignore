@@ -1,0 +1,52 @@
+# ROMs e imagens de disco
+*.z64
+*.n64
+*.v64
+*.rom
+*.iso
+*.bin
+*.cue
+*.xdelta
+*.bps
+*.ips
+*.ups
+
+# Dados extraídos e conteúdo gerado
+/assets/extracted/**
+!/assets/extracted/README.md
+!/assets/extracted/.gitkeep
+/build/
+/dist/
+/out/
+/tmp/
+/cache/
+*.o
+*.a
+*.so
+*.elf
+*.nro
+*.d
+*.map
+
+# Ambientes Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.pipenv/
+
+# Ferramentas e ambientes locais
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Credenciais e configurações locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
