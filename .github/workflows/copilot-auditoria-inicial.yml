@@ -1,0 +1,170 @@
+name: Auditoria técnica com Copilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: copilot-auditoria-inicial
+  cancel-in-progress: false
+
+jobs:
+  technical-audit:
+    name: Auditoria documental em nuvem
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout da branch principal
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verificar se o segredo do Copilot foi configurado
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${COPILOT_GITHUB_TOKEN:-}" ]]; then
+            echo "::error title=Segredo ausente::Cadastre COPILOT_GITHUB_TOKEN em Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Segredo encontrado. O valor não será exibido."
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Instalar GitHub Copilot CLI
+        run: npm install --global @github/copilot
+
+      - name: Clonar referências externas para auditoria somente leitura
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit-sources
+
+          git clone --depth 1 --branch feature/remix-port --recurse-submodules --shallow-submodules \
+            https://github.com/lucasliet/BattleShip-remix.git audit-sources/battleship-remix
+
+          git clone --depth 1 --branch main --recurse-submodules --shallow-submodules \
+            https://github.com/joaorb64/smashremix-plus-extra.git audit-sources/smashremix-plus-extra
+
+          git clone --depth 1 --branch main \
+            https://github.com/VetriTheRetri/ssb-decomp-re.git audit-sources/ssb-decomp-re
+
+          git clone --depth 1 --branch master \
+            https://github.com/JSsixtyfour/smashremix.git audit-sources/smashremix-upstream
+
+          git clone --depth 1 --branch main \
+            https://github.com/JRickey/BattleShip.git audit-sources/battleship-upstream
+
+          git clone --depth 1 --branch main \
+            https://github.com/Kenix3/libultraship.git audit-sources/libultraship
+
+          git clone --depth 1 --branch main \
+            https://github.com/HarbourMasters/Torch.git audit-sources/torch
+
+          git clone --depth 1 --branch master \
+            https://github.com/ps2dev/ps2sdk.git audit-sources/ps2sdk
+
+          git clone --depth 1 --branch master \
+            https://github.com/ps2dev/gsKit.git audit-sources/gsKit
+
+          git clone --depth 1 --branch master \
+            https://github.com/ps2dev/ps2toolchain.git audit-sources/ps2toolchain
+
+          echo "Fontes clonadas. Nenhum script dos projetos externos foi executado."
+
+      - name: Executar Copilot CLI — autenticação e auditoria
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_AUTO_UPDATE: "false"
+        shell: bash
+        run: |
+          set -euo pipefail
+          copilot -p "$(cat prompts/01-auditoria-inicial.md)" \
+            --allow-tool=read \
+            --allow-tool=write \
+            --deny-tool=shell \
+            --no-ask-user \
+            --effort=high
+
+      - name: Validar os relatórios produzidos
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            docs/reports/AUDITORIA_INICIAL.md
+            docs/reports/COMPATIBILIDADE_EXTRA.md
+            docs/reports/ARQUITETURA_PS2.md
+            docs/reports/PLANO_DE_BUILD_NA_NUVEM.md
+          )
+          for file in "${required[@]}"; do
+            if [[ ! -s "$file" ]]; then
+              echo "::error file=$file::O agente não gerou este relatório ou ele está vazio."
+              exit 1
+            fi
+          done
+          echo "Os quatro relatórios obrigatórios foram gerados."
+
+      - name: Criar branch de auditoria e Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="ai/initial-technical-audit-${GITHUB_RUN_ID}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+
+          git add -- \
+            docs/reports/AUDITORIA_INICIAL.md \
+            docs/reports/COMPATIBILIDADE_EXTRA.md \
+            docs/reports/ARQUITETURA_PS2.md \
+            docs/reports/PLANO_DE_BUILD_NA_NUVEM.md \
+            docs/STATUS.md \
+            docs/REFERENCIAS_TECNICAS.md \
+            config/repositories.yml
+
+          if git diff --cached --quiet; then
+            echo "::error::O agente não produziu alterações versionáveis."
+            exit 1
+          fi
+
+          git commit -m "docs: adicionar auditoria técnica inicial"
+          git push --set-upstream origin "$BRANCH"
+
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$BRANCH" \
+            --title "docs: auditoria técnica inicial do port PS2" \
+            --body "## Auditoria técnica inicial
+
+          Relatórios produzidos pelo GitHub Copilot CLI em um runner hospedado.
+
+          ### Incluído
+          - Auditoria da base BattleShip-Remix e das dependências.
+          - Análise do pipeline Smash Remix +EXTRA.
+          - Relatório de compatibilidade entre as bases.
+          - Avaliação preliminar da arquitetura PlayStation 2.
+          - Plano de compilação e desenvolvimento em nuvem.
+
+          ### Segurança e escopo
+          - Somente documentação foi solicitada.
+          - Nenhum script de build externo foi executado.
+          - Nenhuma ROM, asset de jogo ou segredo foi incluído.
+          - As fontes externas foram clonadas em diretório ignorado pelo Git.
+          - O agente não recebeu permissão de shell; o workflow criou a branch e o PR.
+          
+          Revise as evidências, commits e limitações antes do merge."
