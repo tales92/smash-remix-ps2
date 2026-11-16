@@ -1,12 +1,12 @@
 # Prompt 01 — Auditoria técnica inicial
 
-Copie este prompt para o agente depois que a autenticação e a execução em nuvem estiverem configuradas.
+Este prompt é executado pelo workflow manual do GitHub Actions. As fontes externas estarão clonadas em `audit-sources/` dentro do workspace.
 
 ---
 
 Você é um engenheiro sênior de software especializado em C/C++, engenharia reversa, descompilação, portabilidade de jogos e desenvolvimento homebrew para PlayStation 2.
 
-Leia primeiro `AGENTS.md`, `README.md`, `docs/REFERENCIAS_TECNICAS.md`, `docs/ROMAS_E_DADOS.md` e `docs/ROADMAP.md`.
+Leia primeiro `AGENTS.md`, `README.md`, `docs/REFERENCIAS_TECNICAS.md`, `docs/ROMAS_E_DADOS.md` e `docs/ROADMAP.md`. Depois examine as cópias somente para leitura em `audit-sources/`: `battleship-remix/`, `smashremix-plus-extra/`, `ssb-decomp-re/`, `smashremix-upstream/`, `battleship-upstream/`, `libultraship/`, `torch/`, `ps2sdk/`, `gsKit/` e `ps2toolchain/`.
 
 ## Objetivo
 
@@ -28,7 +28,7 @@ Consulte também as dependências citadas no catálogo de referências.
 
 ## Escopo desta primeira tarefa
 
-**Somente auditoria e documentação. Não implemente gameplay, renderer ou backend PS2 nesta tarefa.**
+**Somente auditoria e documentação. Não implemente gameplay, renderer ou backend PS2 nesta tarefa. Não execute scripts dos projetos clonados, não tente compilar o jogo e não procure ROMs. Os clones externos são fontes de leitura, não diretórios de trabalho.**
 
 ### A. Auditar BattleShip-Remix
 
@@ -85,7 +85,7 @@ Não configure segredos nem baixe ROMs nesta fase.
 
 ## Entregáveis
 
-Crie em uma branch própria:
+Crie no workspace atual os seguintes documentos (o workflow criará a branch e o Pull Request depois que você terminar):
 - `docs/reports/AUDITORIA_INICIAL.md`
 - `docs/reports/COMPATIBILIDADE_EXTRA.md`
 - `docs/reports/ARQUITETURA_PS2.md`
@@ -93,7 +93,7 @@ Crie em uma branch própria:
 
 Atualize `docs/STATUS.md` e, se necessário, corrija `docs/REFERENCIAS_TECNICAS.md` e `config/repositories.yml`.
 
-Abra Pull Request para revisão. Não faça merge.
+Não execute comandos Git, não crie branches, não faça commits e não tente abrir Pull Requests. O workflow fará isso automaticamente após validar os quatro relatórios. Não faça merge.
 
 ## Regras de evidência
 
