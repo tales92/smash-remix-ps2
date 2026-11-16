@@ -83,6 +83,9 @@ jobs:
 
           echo "Fontes clonadas. Nenhum script dos projetos externos foi executado."
 
+      - name: Preparar diretório dos relatórios
+        run: mkdir -p docs/reports
+
       - name: Executar Copilot CLI — autenticação e auditoria
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
