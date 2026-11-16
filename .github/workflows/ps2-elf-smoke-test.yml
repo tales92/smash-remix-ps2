@@ -2,6 +2,12 @@ name: PS2 — ELF mínimo
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ps2-elf-smoke-test.yml"
+      - "ps2/hello/**"
 
 permissions:
   contents: read
@@ -23,7 +29,6 @@ jobs:
       - name: Baixar o código do repositório
         uses: actions/checkout@v6
         with:
-          ref: main
           persist-credentials: false
 
       - name: Identificar a imagem PS2DEV fixada
@@ -53,6 +58,7 @@ jobs:
               test -f "$PS2SDK/samples/Makefile.pref"
               test -f "$PS2SDK/samples/Makefile.eeglobal"
 
+              mkdir -p build
               make clean
               make
 
