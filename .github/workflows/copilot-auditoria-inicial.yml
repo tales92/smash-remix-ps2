@@ -142,7 +142,9 @@ jobs:
           fi
 
           git commit -m "docs: adicionar auditoria técnica inicial"
-          git push --set-upstream origin "$BRANCH"
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" push --set-upstream origin "$BRANCH"
+          unset AUTH_HEADER
 
           gh pr create \
             --repo "$GITHUB_REPOSITORY" \
