@@ -21,7 +21,7 @@ Consulte [docs/REFERENCIAS_TECNICAS.md](docs/REFERENCIAS_TECNICAS.md) para a lis
 
 - `AGENTS.md`: instruções permanentes para agentes de programação.
 - `docs/`: auditoria, referências, dados de entrada e roteiro.
-- `assets/roms/`: diretório reservado para ROMs fornecidas pelo usuário; consulte as instruções antes de adicionar arquivos.
+- `assets/roms/`: diretório de referência; ROMs permanentes serão armazenadas como ativos de uma Release privada, conforme [docs/ARMAZENAMENTO_PRIVADO.md](docs/ARMAZENAMENTO_PRIVADO.md).
 - `assets/extracted/`: espaço reservado para dados extraídos localmente ou durante a preparação de builds.
 - `prompts/`: prompts controlados para tarefas do agente.
 - `config/repositories.yml`: catálogo legível por máquina dos repositórios de referência.
