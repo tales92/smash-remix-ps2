@@ -1,0 +1,138 @@
+name: Tarefa de programação com Copilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Cole aqui o prompt completo para o agente"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: copilot-task-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  coding-task:
+    name: Executar tarefa de programação na nuvem
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout da branch principal
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validar segredo do Copilot
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${COPILOT_GITHUB_TOKEN:-}" ]]; then
+            echo "::error title=Segredo ausente::Cadastre COPILOT_GITHUB_TOKEN em Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Segredo de autenticação localizado; valor oculto."
+
+      - name: Instalar Node.js e Copilot CLI
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Instalar Copilot CLI
+        run: npm install --global @github/copilot
+
+      - name: Preparar referências de leitura
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p agent-sources
+          git clone --depth 1 --branch master https://github.com/ps2dev/ps2sdk.git agent-sources/ps2sdk
+          git clone --depth 1 --branch master https://github.com/ps2dev/gsKit.git agent-sources/gsKit
+          git clone --depth 1 --branch master https://github.com/ps2dev/ps2dev.git agent-sources/ps2dev
+          git clone --depth 1 --branch feature/remix-port --recurse-submodules --shallow-submodules https://github.com/lucasliet/BattleShip-remix.git agent-sources/battleship-remix
+          echo "Fontes externas disponíveis somente como referências de leitura."
+
+      - name: Executar tarefa solicitada ao agente
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_AUTO_UPDATE: "false"
+          AGENT_TASK: ${{ inputs.task }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${AGENT_TASK//[[:space:]]/}" ]]; then
+            echo "::error::O prompt da tarefa está vazio."
+            exit 1
+          fi
+          copilot -p "$AGENT_TASK" \
+            --allow-tool=read \
+            --allow-tool=write \
+            --deny-tool=shell \
+            --no-ask-user
+
+      - name: Validar alterações e arquivos proibidos
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "::error::O agente não produziu alterações."
+            exit 1
+          fi
+          if git ls-files --others --exclude-standard | grep -E '(^|/)(assets/roms|assets/extracted|agent-sources)/|\.(z64|n64|v64|rom|iso|elf|bin)$'; then
+            echo "::error::Foram detectados arquivos de ROM/assets ou binários não permitidos."
+            exit 1
+          fi
+
+      - name: Criar branch, commit e Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="ai/copilot-task-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add -A -- . \
+            ':(exclude)agent-sources/**' \
+            ':(exclude)assets/roms/**' \
+            ':(exclude)assets/extracted/**' \
+            ':(exclude)**/*.z64' \
+            ':(exclude)**/*.n64' \
+            ':(exclude)**/*.v64' \
+            ':(exclude)**/*.rom' \
+            ':(exclude)**/*.iso' \
+            ':(exclude)**/*.elf' \
+            ':(exclude)**/*.bin'
+          if git diff --cached --quiet; then
+            echo "::error::Nenhuma alteração permitida para commit."
+            exit 1
+          fi
+          git commit -m "feat: executar tarefa solicitada ao Copilot"
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" push --set-upstream origin "$BRANCH"
+          unset AUTH_HEADER
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$BRANCH" \
+            --title "ai: tarefa executada pelo Copilot" \
+            --body "## Resultado da tarefa do Copilot
+
+          O agente executou a instrução enviada no disparo manual do workflow.
+
+          - Execução: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+          - Branch: $BRANCH
+          - Agente autorizado a ler e escrever arquivos.
+          - Shell bloqueado para o agente; compilações/testes devem ser realizados por workflows específicos.
+          - ROMs, assets extraídos e binários foram excluídos da publicação.
+
+          Revise o diff e os critérios de aceite antes de incorporar."
